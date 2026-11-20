@@ -1,0 +1,19 @@
+# Binaires
+*.exe
+/bin/
+/mon-projet
+
+# Tests et couverture
+*.test
+*.out
+coverage.html
+
+# Secrets (identifiants BDD, clés JWT...)
+.env
+
+# Éditeurs
+.idea/
+.vscode/
+
+# Base SQLite locale si tu en utilises une
+*.db
