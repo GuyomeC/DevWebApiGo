@@ -32,14 +32,32 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetUserById(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "get user by id !")
-	id := r.PathValue("UserId")
-	err := uuid.Validate(id)
+	id, err := uuid.Parse(r.PathValue("UserId"))
 	if err != nil {
 		fmt.Println(err.Error())
-		http.Error(w, "User id is not a uuid", 400)
+		http.Error(w, "User id is not a uuid", http.StatusBadRequest)
 		return
 	}
+	user, err := db.GetUserById(id)
+	if err != nil {
+		fmt.Println(err.Error())
+		http.Error(w, "Server could not get user", http.StatusInternalServerError)
+		return
+	}
+	if user == nil {
+		http.Error(w, "User not found", http.StatusNotFound)
+		return
+	}
+
+	msg, err := json.Marshal(user)
+	if err != nil {
+		fmt.Println(err.Error())
+		http.Error(w, "Server could not translate user", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	fmt.Fprintf(w, "%s", msg)
 }
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {
