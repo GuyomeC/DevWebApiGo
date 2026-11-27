@@ -33,7 +33,20 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetUserById(w http.ResponseWriter, r *http.Request) {
+	// tokenString := r.Header.Get("Authorization")
+	// username, err := utils.VerifyJWT(tokenString)
+	// if err != nil {
+	// 	http.Error(w, "Invalid token", http.StatusUnauthorized)
+	// 	return
+	// }
+	// userUsername, err := db.GetUsersByUsername(username)
+	// if err != nil {
+	// 	//return erreur
+	// }
+	// //verifier s'il a plus de 15 en grade
+
 	id, err := uuid.Parse(r.PathValue("UserId"))
+
 	if err != nil {
 		fmt.Println(err.Error())
 		http.Error(w, "User id is not a uuid", http.StatusBadRequest)
