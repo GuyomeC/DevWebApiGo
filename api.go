@@ -28,6 +28,7 @@ func main() {
 	http.HandleFunc("GET /users", application.GetAllUsers)
 	http.HandleFunc("GET /users/{UserId}", application.GetUserById)
 	http.HandleFunc("POST /users", application.CreateUser)
+	http.HandleFunc("POST /login/{$}", application.Login)
 
 	http.ListenAndServe(":8080", nil)
 }

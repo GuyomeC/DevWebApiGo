@@ -8,6 +8,7 @@ import (
 
 	"github.com/GuyomeC/DevWebApiGo/db"
 	"github.com/GuyomeC/DevWebApiGo/models"
+	"github.com/GuyomeC/DevWebApiGo/utils"
 
 	"github.com/google/uuid"
 )
@@ -110,4 +111,33 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusCreated)
+}
+
+func Login(w http.ResponseWriter, r *http.Request) {
+	var creds models.Credentials
+	err := json.NewDecoder(r.Body).Decode(&creds)
+	if err != nil {
+		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		return
+	} // décode le body pour les donnees du client
+
+	existing, err := db.GetUsersByUsername(creds.Username)
+	if err != nil {
+		http.Error(w, "Error requestiong user by username", http.StatusInternalServerError)
+		return
+	} // recup l'username dans la DB
+
+	if existing == nil || creds.Username != existing.Username ||
+		creds.Password != existing.Password {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	} //verif que le username et password soient egaux si oui token
+
+	token, err := utils.GenerateJWT(creds.Username)
+	if err != nil {
+		http.Error(w, "Error generating token", http.StatusInternalServerError)
+		return
+	}
+	encodedToken, _ := json.Marshal(token)
+	fmt.Fprintf(w, "%s", encodedToken)
 }
